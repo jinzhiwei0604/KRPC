@@ -47,4 +47,8 @@ public class ServiceCache {
         List<String> addressList = cache.get((serviceName));
         return addressList;
     }
+
+    //添加进入缓存
+    public void addServcieToCache(String serviceName, String address) {
+    }
 }

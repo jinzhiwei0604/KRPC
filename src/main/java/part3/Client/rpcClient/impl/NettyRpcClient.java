@@ -21,7 +21,7 @@ public class NettyRpcClient implements RpcClient {
     private static final EventLoopGroup evenLoopGroup; //Netty的线程池，用与IO操作，基于NIO实现 非阻塞IO
 
     private ServiceCenter serviceCenter;
-    public NettyRpcClient() {
+    public NettyRpcClient() throws InterruptedException {
         this.serviceCenter = new ZKServiceCenter();
     }
     //客户端初始化

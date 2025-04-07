@@ -33,7 +33,6 @@ public class ZKServiceRegister implements ServiceRegister {
             if (clent.checkExists().forPath("/" + serviceName) == null) {
                 clent.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath("/" + serviceName);
             }
-
             String path = "/" + serviceName + "/" + getServiceAddress(serviceAddress);
             //临时节点,服务断开时自动删除该节点
             clent.create().creatingParentsIfNeeded().withMode(CreateMode.EPHEMERAL).forPath(path);

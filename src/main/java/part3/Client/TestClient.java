@@ -5,7 +5,7 @@ import part3.common.UserService.UserService;
 import part3.common.pojo.User;
 
 public class TestClient {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
 
         ClientProxy clientProxy = new ClientProxy();
 
