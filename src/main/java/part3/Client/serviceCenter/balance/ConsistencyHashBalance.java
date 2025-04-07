@@ -45,11 +45,11 @@ public class ConsistencyHashBalance implements LoadBalance{
             key = subMap.firstKey();
         }
         String virtualNode = shards.get(key);
-        return virtualNode.substring(0, virtualNode.indexOf("&&"));
+        return virtualNode.substring(0, virtualNode.indexOf("&&")); //从虚拟节点中获取真实节点
 
     }
 
-    private int getHash(String str) {
+    private int getHash(String str) { //哈希函数
         final int p = 16777619;
         int hash = (int) 2166136261L;
         for (int i = 0; i < str.length(); i++)
