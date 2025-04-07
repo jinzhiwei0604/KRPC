@@ -14,7 +14,7 @@ public class RpcResponse {
     private Object data;
     private Class<?> DataType;
     public static RpcResponse sussess(Object data) {
-        return RpcResponse.builder().code(500).message("服务器发生错误").build();
+        return RpcResponse.builder().code(200).DataType(data.getClass()).data(data).build();
     }
 
     public static RpcResponse fail() {

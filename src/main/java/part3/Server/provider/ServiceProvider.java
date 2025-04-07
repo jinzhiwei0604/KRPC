@@ -13,12 +13,14 @@ public class ServiceProvider {
     private int port;
     private ServiceRegister serviceRegister;
     private Map<String, Object> interfaceProvider;//存放服务的实例，接口的全限定名String，对应的实现类Object
+    private RateLimitProvider rateLimitProvider;
 
     public ServiceProvider(String host,int port) {
         this.host = host;
         this.port = port;
         this.interfaceProvider = new HashMap<>();
         this.serviceRegister = new ZKServiceRegister();
+        this.rateLimitProvider = new RateLimitProvider();
         }
 
 
@@ -36,5 +38,9 @@ public class ServiceProvider {
     //获取服务实例
     public Object getService(String interfaceName) {
         return interfaceProvider.get((interfaceName));
+    }
+
+    public RateLimitProvider getRateLimitProvider() {
+        return  rateLimitProvider;
     }
 }

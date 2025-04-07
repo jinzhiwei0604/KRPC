@@ -4,6 +4,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import lombok.AllArgsConstructor;
 import part3.Server.provider.ServiceProvider;
+import part3.Server.ratelimit.RateLimit;
 import part3.common.Message.RpcRequest;
 import part3.common.Message.RpcResponse;
 
@@ -27,6 +28,12 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<RpcRequest>{
     private RpcResponse getResponse(RpcRequest rpcRequest) {
         //获取接口名字并获取其对应的服务类
         String interfaceName = rpcRequest.getInterfaceName();
+        RateLimit rateLimit = serviceProvider.getRateLimitProvider().getRateLimit(interfaceName);
+        if(!rateLimit.getToken()){
+            System.out.println("令牌已用完，服务限流");
+            return RpcResponse.fail();
+        }
+        //得到服务端相应服务的实现类
         Object service = serviceProvider.getService(interfaceName);
 
         Method method = null;
@@ -34,7 +41,6 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<RpcRequest>{
             method = service.getClass().getMethod(rpcRequest.getMethodName(),rpcRequest.getParamsType());
 
             Object invoke = method.invoke(service, rpcRequest.getParams());
-
             //封装响应对象并返回
             return RpcResponse.sussess(invoke);
         } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
