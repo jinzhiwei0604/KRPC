@@ -23,7 +23,7 @@ public class TestClient {
 
                     System.out.println("从服务器得到的user" + user.toString());
 
-                    User u = User.builder().id(100).userName("jzw").sex(true).build();
+                    User u = User.builder().id(i1).userName("jzw").sex(true).build();
                     Integer id = proxy.insertUsedId(u);
                     System.out.println("向服务器插入user的id" + id);
                 } catch (Exception e) {
