@@ -9,7 +9,6 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.util.AttributeKey;
 import part3.Client.rpcClient.RpcClient;
 import part3.Client.serviceCenter.ServiceCenter;
-import part3.Client.serviceCenter.ZKServiceCenter;
 import part3.common.Message.RpcRequest;
 import part3.common.Message.RpcResponse;
 
@@ -21,8 +20,8 @@ public class NettyRpcClient implements RpcClient {
     private static final EventLoopGroup evenLoopGroup; //Netty的线程池，用与IO操作，基于NIO实现 非阻塞IO
 
     private ServiceCenter serviceCenter;
-    public NettyRpcClient() throws InterruptedException {
-        this.serviceCenter = new ZKServiceCenter();
+    public NettyRpcClient(ServiceCenter serviceCenter) throws InterruptedException {
+        this.serviceCenter = serviceCenter;
     }
     //客户端初始化
     static {

@@ -16,6 +16,8 @@ public class ZKServiceCenter implements ServiceCenter{
 
     private static final String ROOT_PATH = "MyRPC"; //根路径
 
+    private static final String RETRY = "CanRetry";
+
     private ServiceCache cache;
     public ZKServiceCenter() throws InterruptedException{ //初始化并于ZK服务端进行连接
 
@@ -47,6 +49,24 @@ public class ZKServiceCenter implements ServiceCenter{
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    //判断是否可重试
+    @Override
+    public Boolean checkRetry(String serviceName) {
+        boolean canRetry = false;
+        try {
+            List<String> serviceList = clent.getChildren().forPath("/" + serviceName);
+            for (String s : serviceList) {
+                if (s.equals(serviceName)) {
+                    System.out.println("服务"+serviceName+"在白名单上，可进行重试");
+                    canRetry = true;
+                }
+            }
+        } catch (Exception e) {
+           e.printStackTrace();
+        }
+        return canRetry;
     }
 
     private String getServiceAddress(InetSocketAddress serviceAddress) {

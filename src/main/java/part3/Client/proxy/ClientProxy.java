@@ -2,7 +2,10 @@ package part3.Client.proxy;
 
 import lombok.AllArgsConstructor;
 import part3.Client.netty.nettyInitializer.NettyRpcClient;
+import part3.Client.retry.GuavaRetry;
 import part3.Client.rpcClient.RpcClient;
+import part3.Client.serviceCenter.ServiceCenter;
+import part3.Client.serviceCenter.ZKServiceCenter;
 import part3.common.Message.RpcRequest;
 import part3.common.Message.RpcResponse;
 
@@ -16,9 +19,11 @@ public class ClientProxy implements InvocationHandler {
 
 
     private RpcClient rpcClient;
-
+    private ServiceCenter serviceCenter;
     public ClientProxy() throws InterruptedException {
-        rpcClient = new NettyRpcClient();
+        serviceCenter = new ZKServiceCenter();
+        rpcClient = new NettyRpcClient(serviceCenter);
+
     }
     //jdk动态代理，每一次代理对象调用方法，都会经过此方法增强（反射获取request对象，socket发送到服务端）
     @Override
@@ -29,7 +34,12 @@ public class ClientProxy implements InvocationHandler {
                 .methodName(method.getName())
                 .params(args).paramsType(method.getParameterTypes()).build();
         //数据传输
-        RpcResponse response= rpcClient.sendRequest(request);
+        RpcResponse response;
+        if (serviceCenter.checkRetry(request.getInterfaceName())) {
+            response = new GuavaRetry().sendServiceWithRetry(request, rpcClient);//重试
+        } else {
+            response = rpcClient.sendRequest(request);//调用一次
+        }
         return response.getData();
     }
 
