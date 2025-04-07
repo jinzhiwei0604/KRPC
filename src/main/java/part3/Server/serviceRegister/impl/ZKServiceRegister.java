@@ -12,7 +12,7 @@ import java.net.InetSocketAddress;
 public class ZKServiceRegister implements ServiceRegister {
 
 
-    private CuratorFramework clent;//curator提供的ZK客户端
+    private CuratorFramework client;//curator提供的ZK客户端
 
     private static final String ROOT_PATH = "MyRPC"; //根路径
 
@@ -20,9 +20,9 @@ public class ZKServiceRegister implements ServiceRegister {
 
         RetryPolicy policy = new ExponentialBackoffRetry(1000,3);//指数时间重试策略 初始1秒 后续翻倍
         //初始化
-        this.clent = CuratorFrameworkFactory.builder().connectString("127.0.0.1:2181")
+        this.client = CuratorFrameworkFactory.builder().connectString("127.0.0.1:2181")
                 .sessionTimeoutMs(30000).retryPolicy(policy).namespace(ROOT_PATH).build();//30秒没有操作就断开连接
-        this.clent.start();
+        this.client.start();
         System.out.println("Zookeeper连接成功");
     }
     @Override
@@ -30,12 +30,12 @@ public class ZKServiceRegister implements ServiceRegister {
 
         try {
             //根据服务名字检查是否存在 不存在则创建永久节点，服务下线时不删服务名，只删除地址
-            if (clent.checkExists().forPath("/" + serviceName) == null) {
-                clent.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath("/" + serviceName);
+            if (client.checkExists().forPath("/" + serviceName) == null) {
+                client.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath("/" + serviceName);
             }
             String path = "/" + serviceName + "/" + getServiceAddress(serviceAddress);
             //临时节点,服务断开时自动删除该节点
-            clent.create().creatingParentsIfNeeded().withMode(CreateMode.EPHEMERAL).forPath(path);
+            client.create().creatingParentsIfNeeded().withMode(CreateMode.EPHEMERAL).forPath(path);
         } catch (Exception e) {
             System.out.println("此服务已存在");
         }
